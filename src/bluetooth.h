@@ -12,7 +12,7 @@ class Bluetooth {
         Bluetooth();
         void start();
         void stop();
-        void sendJson(JsonObject& json);
+        void sendJson(JsonDocument& json);
 
     private:
         NimBLEServer* pServer;
@@ -26,7 +26,11 @@ class Bluetooth {
 
 
         class Callbacks : public NimBLECharacteristicCallbacks {
-            void onWrite(NimBLECharacteristic* pCharacteristic);
+            public:
+                Callbacks(Bluetooth* bluetooth) : bluetooth(bluetooth) {}
+                void onWrite(NimBLECharacteristic* pCharacteristic);
+            private:
+                Bluetooth* bluetooth;
         };
 
         Callbacks* pCallbacks;

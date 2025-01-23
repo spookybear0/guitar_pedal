@@ -16,7 +16,7 @@ void Bluetooth::start() {
                                 NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY
                             );
         
-        pCharacteristic->setCallbacks(new Callbacks());
+        pCharacteristic->setCallbacks(new Callbacks(this));
         pService->start();
         
         NimBLEAdvertising* pAdvertising = pServer->getAdvertising();
@@ -28,7 +28,7 @@ void Bluetooth::stop() {
     NimBLEDevice::deinit(true);
 }
 
-void Bluetooth::sendJson(JsonObject& json) {
+void Bluetooth::sendJson(JsonDocument& json) {
     // convert json to string
     String jsonString;
     serializeJson(json, jsonString);
@@ -57,7 +57,9 @@ void Bluetooth::Callbacks::onWrite(NimBLECharacteristic* pCharacteristic) {
     // get the handler
 
     if (handlers.find(path) != handlers.end()) {
-        handlers[path](doc);
+        // call the handler
+        JsonDocument& response = handlers[path](doc);
+        bluetooth->sendJson(response);
     } else {
         Serial.println("Handler not found");
         // TODO: handle

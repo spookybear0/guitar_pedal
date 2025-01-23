@@ -2,14 +2,11 @@
 #include <map>
 #include <string>
 #include <ArduinoJson.h>
+#include "handlers/ping.h"
+#include <functional>
 
 // {path: handler}
 
-std::map<std::string, void (*)(JsonDocument&)> handlers = {
-    {"hello", [](JsonDocument& json) {
-        Serial.println("Hello");
-    }},
-    {"world", [](JsonDocument& json) {
-        Serial.println("World");
-    }}
+std::map<std::string, std::function<JsonDocument&(JsonDocument&)>> handlers = {
+    {"ping", ping}
 };
