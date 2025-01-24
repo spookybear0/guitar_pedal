@@ -2,8 +2,9 @@
 #include <map>
 #include <string>
 #include <ArduinoJson.h>
-#include "handlers/ping.h"
 #include <functional>
+
+JsonDocument& ping(JsonDocument& json);
 
 // {path: handler}
 

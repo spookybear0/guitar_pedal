@@ -1,4 +1,3 @@
-#include "ping.h"
 #include <ArduinoJson.h>
 
 JsonDocument& ping(JsonDocument& json) {
