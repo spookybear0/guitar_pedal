@@ -1,0 +1,1 @@
+// give info about all effects including the name and the paramaters
