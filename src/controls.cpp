@@ -26,6 +26,36 @@ void Controls::init(unsigned char param1, unsigned char param2, unsigned char pa
     }
 }
 
+void Controls::update() {
+    // actually physically update the pots
+    if (updateNeeded) { // optimization
+        setPot(PARAM1_PIN, param1Value);
+        setPot(PARAM2_PIN, param2Value);
+        setPot(PARAM3_PIN, param3Value);
+        setPot(VOLUME_PIN, volumeValue);
+        setPot(MIX_PIN, mixValue);
+        updateNeeded = false;
+    }
+}
+
+void Controls::setAll(unsigned char param1, unsigned char param2, unsigned char param3, unsigned char volume, unsigned char mix) {
+    setParam1(param1);
+    setParam2(param2);
+    setParam3(param3);
+    setVolume(volume);
+    setMix(mix);
+    updateNeeded = true; // signal that the pots need to be updated using update()
+}
+
+void Controls::setAll(unsigned char value) {
+    setParam1(value);
+    setParam2(value);
+    setParam3(value);
+    setVolume(value);
+    setMix(value);
+    updateNeeded = true;
+}
+
 void Controls::setPot(int pin, unsigned char value) {
     if (pin == -1) {
         return;
@@ -36,26 +66,26 @@ void Controls::setPot(int pin, unsigned char value) {
 }
 
 void Controls::setParam1(unsigned char value) {
-    setPot(PARAM1_PIN, value);
     param1Value = value;
+    updateNeeded = true;
 }
 
 void Controls::setParam2(unsigned char value) {
-    setPot(PARAM2_PIN, value);
     param2Value = value;
+    updateNeeded = true;
 }
 
 void Controls::setParam3(unsigned char value) {
     setPot(PARAM3_PIN, value);
-    param3Value = value;
+    updateNeeded = true;
 }
 
 void Controls::setVolume(unsigned char value) {
     setPot(VOLUME_PIN, value);
-    volumeValue = value;
+    updateNeeded = true;
 }
 
 void Controls::setMix(unsigned char value) {
     setPot(MIX_PIN, value);
-    mixValue = value;
+    updateNeeded = true;
 }

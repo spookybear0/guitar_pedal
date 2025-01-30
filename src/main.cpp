@@ -42,5 +42,5 @@ void loop() {
 
     // send values to virtual potentiometers 
 
-    //...
+    Controls::update();
 }
