@@ -38,6 +38,9 @@ void UI::init() {
 }
 
 void UI::draw() {
+    // set chip select pin to low to start communication with the display
+    digitalWrite(TFT_CS, LOW);
+
     // Read rotary encoder position
     rotaryValue = encoder.getCount();
     Serial.println(rotaryValue);
@@ -64,11 +67,15 @@ void UI::draw() {
         }
     }
 
+
     // Check button press
     if (digitalRead(ROTARY_BUTTON) == LOW) {
         delay(200); // Debounce
         UI::handleButtonPress();
     }
+
+    // end communication with the display
+    digitalWrite(TFT_CS, HIGH);
 }
 
 void UI::handleButtonPress() {

@@ -9,6 +9,7 @@
 #include "bluetooth.h"
 #include "settings.h"
 #include "ui.h"
+#include "controls.h"
 
 Bluetooth bluetooth;
 Settings settings;
@@ -19,6 +20,8 @@ void handleButtonPress();
 void setup() {
     Serial.begin(9600);
     Serial.println("Hello World");
+
+    Controls::init(0, 0, 0, 0, 0);
 
     UI::init();
 
