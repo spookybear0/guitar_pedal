@@ -8,39 +8,34 @@
 #include <ESP32Encoder.h>
 #include "bluetooth.h"
 #include "settings.h"
-#include "ui.h"
+#include "ui/ui_manager.h"
 #include "controls.h"
+#include "events/event_manager.h"
+#include "input.h"
 
 Bluetooth bluetooth;
 Settings settings;
-
-
-void handleButtonPress();
 
 void setup() {
     Serial.begin(9600);
     Serial.println("Hello World");
 
+    // initalize inputs
+    Input::init();
+
     Controls::init(0, 0, 0, 0, 0);
 
-    UI::init();
+    UIManager::init();
 
     bluetooth.start();
 }
 
 void loop() {
-    // bluetooth
-    // check for any requests from bluetooth and handle them
+    // read inputs and handle events
 
-    // read inputs (footswitches)
-
-    //...
-
-    // handle ui (update based on rotary encoder)
-
-    UI::draw();
+    Input::handleInput();
 
     // send values to virtual potentiometers 
 
-    Controls::update();
+    //Controls::update();
 }
