@@ -69,7 +69,8 @@ void Bluetooth::CharacteristicCallbacks::onWrite(NimBLECharacteristic* pCharacte
 
     if (handlers.find(path) != handlers.end()) {
         // call the handler
-        JsonDocument& response = handlers[path](doc);
+        JsonDocument response;
+        handlers[path](doc, response);
 
         // add the request id
         response["requestId"] = requestId;

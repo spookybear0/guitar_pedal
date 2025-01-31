@@ -4,10 +4,12 @@
 #include <ArduinoJson.h>
 #include <functional>
 
-JsonDocument& ping(JsonDocument& json);
+void effects_get(JsonDocument& json, JsonDocument& response);
+void ping(JsonDocument& json, JsonDocument& response);
 
 // {path: handler}
 
-std::map<std::string, std::function<JsonDocument&(JsonDocument&)>> handlers = {
-    {"ping", ping}
+std::map<std::string, std::function<void(JsonDocument&, JsonDocument&)>> handlers = {
+    {"effects_get", effects_get},
+    {"ping", ping},
 };

@@ -55,11 +55,17 @@ const char* Effect::getParamName(int index) {
     return effectParamNames[id][index];
 }
 
-JsonDocument& Effect::toJson() {
+JsonDocument& Effect::toJson(bool full) {
     static DynamicJsonDocument doc(1024);
     doc["id"] = id;
     doc["params"][0] = params[0];
     doc["params"][1] = params[1];
     doc["params"][2] = params[2];
+    if (full) {
+        doc["name"] = getName();
+        doc["paramNames"][0] = getParamName(0);
+        doc["paramNames"][1] = getParamName(1);
+        doc["paramNames"][2] = getParamName(2);
+    }
     return doc;
 }

@@ -19,7 +19,7 @@ public:
     const char* getName();
     const char* getParamName(int index);
 
-    JsonDocument& toJson();;
+    JsonDocument& toJson(bool full = false);
 private:
     Effect();
 };
