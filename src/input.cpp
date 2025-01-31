@@ -7,8 +7,12 @@
 #define ROTARY_PIN_B 22
 #define ROTARY_BUTTON 25
 
+ESP32Encoder Input::rotaryEncoder;
 int Input::rotaryValue = 0; // clamped 0-255
 int Input::lastRotaryValue = -1;
+int Input::lastButtonState = HIGH;
+bool Input::buttonPressed = false;
+int Input::lastButtonMillis = 0;
 
 void Input::init() {
     // initalize rotary encoder
@@ -28,16 +32,32 @@ void Input::setRotaryValue(int value) {
 
 void Input::handleInput() {
     // rotary encoder (turn)
-    int newRotaryValue = constrain(rotaryEncoder.getCount(), 0, 255);
-    if (newRotaryValue != lastRotaryValue) {
-        Serial.print("Rotary: ");
-        Serial.println(newRotaryValue);
-        EventManager::handleEvent(Event{EventType::EVENT_ROTARY_TURN, newRotaryValue});
-        lastRotaryValue = newRotaryValue;
+
+    // clamp to 0-255
+
+    rotaryValue = rotaryEncoder.getCount();
+    if (rotaryValue != lastRotaryValue) {
+        Serial.println("Rotary Value: " + String(rotaryValue));
+        rotaryValue = constrain(rotaryValue, 0, 255);
+        // make sure rotary doesn't go below 0 or above 255
+        setRotaryValue(rotaryValue);
+        EventManager::handleEvent(Event{EventType::EVENT_ROTARY_TURN, rotaryValue});
     }
-    // rotary encoder (click)
-    if (digitalRead(ROTARY_BUTTON) == LOW) {
-        Serial.println("Rotary Click");
-        EventManager::handleEvent(Event{EventType::EVENT_ROTARY_CLICK, -1});
+    lastRotaryValue = rotaryValue;
+
+    // rotary encoder (click), with debounce, and only considers press, not release
+    int buttonState = digitalRead(ROTARY_BUTTON);
+    if (buttonState == LOW && lastButtonState == HIGH && millis() - lastButtonMillis > 50) {
+        if (buttonPressed) {
+            Serial.println("Rotary Pressed");
+            EventManager::handleEvent(Event{EventType::EVENT_ROTARY_CLICK, 1});
+        }
+        else {
+            Serial.println("Rotary Released");
+            EventManager::handleEvent(Event{EventType::EVENT_ROTARY_CLICK, 0});
+        }
+        buttonPressed = !buttonPressed;
+        lastButtonMillis = millis();
     }
+    lastButtonState = buttonState;
 }

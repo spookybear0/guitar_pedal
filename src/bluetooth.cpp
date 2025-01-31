@@ -77,7 +77,7 @@ void Bluetooth::CharacteristicCallbacks::onWrite(NimBLECharacteristic* pCharacte
         bluetooth->sendJson(response);
     } else {
         Serial.println("Handler not found");
-        // TODO: handle
+        // TODO: handle error
     }
 }
 

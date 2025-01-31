@@ -38,15 +38,16 @@ void MainMenuPage::handleEvent(const Event& event) {
         Input::setRotaryValue(currentMenuItem);
         draw();
     }
-    if (event.type == EventType::EVENT_ROTARY_CLICK) {
+    if (event.type == EventType::EVENT_ROTARY_CLICK && event.value == 1) { // rotary click (press only)
         // check page and navigate
         if (currentMenuItem == 0) { // Single Effect
-            UIManager::currentPage = 1;
-        } else if (currentMenuItem == 1) { // Ordered Effects
-            UIManager::currentPage = 2;
-        } else if (currentMenuItem == 2) { // Settings
-            UIManager::currentPage = 3;
+            UIManager::changePage(PageType::SINGLE_EFFECT);
         }
-        UIManager::pages[UIManager::currentPage]->draw();
+        else if (currentMenuItem == 1) { // Ordered Effects
+            UIManager::changePage(PageType::ORDERED_EFFECTS);
+        }
+        else if (currentMenuItem == 2) { // Settings
+            UIManager::changePage(PageType::SETTINGS);
+        }
     }
 }

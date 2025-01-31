@@ -1,9 +1,13 @@
 #include "ui_manager.h"
 #include <ESP32Encoder.h>
+#include <Arduino.h>
+#include "events/event_manager.h"
+#include "input.h"
 
 #include "ui/page.h"
 
 #include "ui/pages/main_menu.h"
+#include "ui/pages/single_effect.h"
 
 #define ROTARY_PIN_A 21
 #define ROTARY_PIN_B 22
@@ -13,8 +17,9 @@ TFT_eSPI tft = TFT_eSPI();
 
 Page* UIManager::pages[] = {
     new MainMenuPage(),
+    new SingleEffectPage(),
 };
-int UIManager::currentPage = 0; // corresponds to the index of the page in the pages array
+PageType UIManager::currentPage = PageType::MAIN_MENU; // corresponds to the index of the page in the pages array
 
 void UIManager::init() {
     // tft
@@ -41,4 +46,18 @@ void UIManager::handleEvent(const Event& event) {
 
     // end communication with the display
     digitalWrite(TFT_CS, HIGH);
+}
+
+void UIManager::changePage(PageType page) {
+    // check page number validity
+    if (page < 0 || page >= sizeof(pages) / sizeof(pages[0])) {
+        Serial.println("ERROR: Invalid page number, restarting...");
+        ESP.restart();
+        return;
+    }
+
+    currentPage = page;
+    Input::setRotaryValue(0);
+    pages[currentPage]->enter();
+    pages[currentPage]->draw();
 }

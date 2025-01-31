@@ -13,11 +13,15 @@
 #include "events/event_manager.h"
 #include "input.h"
 
-Bluetooth bluetooth;
-Settings settings;
+Bluetooth bluetooth; // TODO: static class
+
+uint32_t settingsSaveNextMillis = 0;
+int settingsSaveInterval = 30000; // 30 seconds
+
+// TODO: maybe make it so if nothing changes on the screen after an input, don't update it (to prevent flickering)
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
     Serial.println("Hello World");
 
     // initalize inputs
@@ -28,6 +32,8 @@ void setup() {
     UIManager::init();
 
     bluetooth.start();
+
+    Settings::begin();
 }
 
 void loop() {
@@ -38,4 +44,10 @@ void loop() {
     // send values to virtual potentiometers 
 
     //Controls::update();
+
+    // save settings if needed (every 30 seconds for optimization and flash wear)
+    if (millis() - settingsSaveNextMillis > settingsSaveInterval) {
+        Settings::saveValues();
+        settingsSaveNextMillis += settingsSaveInterval;
+    }
 }

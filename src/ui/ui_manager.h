@@ -7,11 +7,20 @@
 
 extern TFT_eSPI tft;
 
+enum PageType {
+    MAIN_MENU,
+    SINGLE_EFFECT,
+    ORDERED_EFFECTS,
+    SETTINGS
+};
+
 class UIManager {
+private:
+    static PageType currentPage;
 public:
     static Page* pages[];
-    static int currentPage;
 
     static void init();
     static void handleEvent(const Event& event);
+    static void changePage(PageType page);
 };

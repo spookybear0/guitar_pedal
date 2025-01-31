@@ -5,7 +5,6 @@ std::vector<void (*)(const Event& event)> EventManager::callbacks = std::vector<
 
 void EventManager::handleEvent(const Event& event) {
     for (auto& callback : callbacks) {
-        Serial.println("Calling callback");
         callback(event);
     }
 }
