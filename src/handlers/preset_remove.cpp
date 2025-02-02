@@ -1,1 +1,1 @@
-// remove a preset
+// remove a preset by id

@@ -16,7 +16,7 @@
 Bluetooth bluetooth; // TODO: static class
 
 uint32_t settingsSaveNextMillis = 0;
-int settingsSaveInterval = 30000; // 30 seconds
+int settingsSaveInterval = 10000; // 10 seconds
 
 // TODO: maybe make it so if nothing changes on the screen after an input, don't update it (to prevent flickering)
 
@@ -27,7 +27,7 @@ void setup() {
     // initalize inputs
     Input::init();
 
-    Controls::init(0, 0, 0, 0, 0);
+    Controls::init(100, 50, 0, 0, 0);
 
     UIManager::init();
 
@@ -41,9 +41,9 @@ void loop() {
 
     Input::handleInput();
 
-    // send values to virtual potentiometers 
+    // send values to virtual potentiometers and demux
 
-    //Controls::update();
+    Controls::update();
 
     // save settings if needed (every 30 seconds for optimization and flash wear)
     if (millis() - settingsSaveNextMillis > settingsSaveInterval) {

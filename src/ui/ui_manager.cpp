@@ -8,6 +8,8 @@
 
 #include "ui/pages/main_menu.h"
 #include "ui/pages/single_effect.h"
+#include "ui/pages/ordered_effects.h"
+#include "ui/pages/settings.h"
 
 #define ROTARY_PIN_A 21
 #define ROTARY_PIN_B 22
@@ -18,6 +20,8 @@ TFT_eSPI tft = TFT_eSPI();
 Page* UIManager::pages[] = {
     new MainMenuPage(),
     new SingleEffectPage(),
+    new OrderedEffectsPage(),
+    new SettingsPage()
 };
 PageType UIManager::currentPage = PageType::MAIN_MENU; // corresponds to the index of the page in the pages array
 

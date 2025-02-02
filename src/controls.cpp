@@ -2,8 +2,24 @@
 #include <SPI.h>
 #include <Arduino.h>
 
-void Controls::init(unsigned char param1, unsigned char param2, unsigned char param3, unsigned char volume, unsigned char mix) {
+bool Controls::updateNeeded = false;
+unsigned char Controls::mixValue = 0;
+unsigned char Controls::volumeValue = 0;
+unsigned char Controls::param1Value = 0;
+unsigned char Controls::param2Value = 0;
+unsigned char Controls::param3Value = 0;
+unsigned char Controls::effectValue = 0;
+
+void Controls::init(unsigned char mix, unsigned char volume, unsigned char param1, unsigned char param2, unsigned char param3) {
     // initialize the digital potentiometers
+    if (MIX_PIN != -1) {
+        pinMode(MIX_PIN, OUTPUT);
+        setMix(mix);
+    }
+    if (VOLUME_PIN != -1) {
+        pinMode(VOLUME_PIN, OUTPUT);
+        setVolume(volume);
+    }
     if (PARAM1_PIN != -1) {
         pinMode(PARAM1_PIN, OUTPUT);
         setParam1(param1);
@@ -16,43 +32,44 @@ void Controls::init(unsigned char param1, unsigned char param2, unsigned char pa
         pinMode(PARAM3_PIN, OUTPUT);
         setParam3(param3);
     }
-    if (VOLUME_PIN != -1) {
-        pinMode(VOLUME_PIN, OUTPUT);
-        setVolume(volume);
-    }
-    if (MIX_PIN != -1) {
-        pinMode(MIX_PIN, OUTPUT);
-        setMix(mix);
-    }
 }
 
 void Controls::update() {
     // actually physically update the pots
     if (updateNeeded) { // optimization
+        // set the demux pins to select the effect (0-7)
+        digitalWrite(DEMUX1_PIN, (effectValue >> 2) & 1);
+        digitalWrite(DEMUX2_PIN, (effectValue >> 1) & 1);
+        digitalWrite(DEMUX3_PIN, effectValue & 1);
+
+        // pots
+        setPot(MIX_PIN, mixValue);
+        setPot(VOLUME_PIN, volumeValue);
         setPot(PARAM1_PIN, param1Value);
         setPot(PARAM2_PIN, param2Value);
         setPot(PARAM3_PIN, param3Value);
-        setPot(VOLUME_PIN, volumeValue);
-        setPot(MIX_PIN, mixValue);
+
+        // reset the update flag
         updateNeeded = false;
     }
 }
 
-void Controls::setAll(unsigned char param1, unsigned char param2, unsigned char param3, unsigned char volume, unsigned char mix) {
+void Controls::setAllPots(unsigned char param1, unsigned char param2, unsigned char param3, unsigned char volume, unsigned char mix) {
+    setMix(mix);
+    setVolume(volume);
     setParam1(param1);
     setParam2(param2);
     setParam3(param3);
-    setVolume(volume);
-    setMix(mix);
     updateNeeded = true; // signal that the pots need to be updated using update()
 }
 
-void Controls::setAll(unsigned char value) {
+void Controls::setAllPots(unsigned char value) {
+    setMix(value);
+    setVolume(value);
     setParam1(value);
     setParam2(value);
     setParam3(value);
-    setVolume(value);
-    setMix(value);
+    
     updateNeeded = true;
 }
 
@@ -61,8 +78,21 @@ void Controls::setPot(int pin, unsigned char value) {
         return;
     }
     digitalWrite(pin, LOW); // enable the pot
+    SPI.transfer(0x11); // command to set wiper
     SPI.transfer(value);
     digitalWrite(pin, HIGH); // disable the pot
+}
+
+
+// pot values
+void Controls::setMix(unsigned char value) {
+    setPot(MIX_PIN, value);
+    updateNeeded = true;
+}
+
+void Controls::setVolume(unsigned char value) {
+    setPot(VOLUME_PIN, value);
+    updateNeeded = true;
 }
 
 void Controls::setParam1(unsigned char value) {
@@ -80,12 +110,8 @@ void Controls::setParam3(unsigned char value) {
     updateNeeded = true;
 }
 
-void Controls::setVolume(unsigned char value) {
-    setPot(VOLUME_PIN, value);
-    updateNeeded = true;
-}
-
-void Controls::setMix(unsigned char value) {
-    setPot(MIX_PIN, value);
+// effect selector (0-7) (demux pins)
+void Controls::setEffect(unsigned char effect) {
+    effectValue = effect;
     updateNeeded = true;
 }

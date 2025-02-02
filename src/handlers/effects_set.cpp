@@ -1,0 +1,1 @@
+// set parameters for single effect mode

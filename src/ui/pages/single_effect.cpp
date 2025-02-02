@@ -6,6 +6,8 @@
 #include "events/event_manager.h"
 #include "input.h"
 #include "settings.h"
+#include "controls.h"
+#include "../../settings.h"
 
 void SingleEffectPage::draw() {
     // centered text
@@ -23,7 +25,7 @@ void SingleEffectPage::draw() {
         tft.setTextSize(1);
         // bottom left text ("prev effect")
         tft.setTextDatum(BL_DATUM);
-        tft.drawString(String("<-") + effectNames[currentEffect - 1], 10, tft.height() - 10);
+        tft.drawString(String("<-") + Settings::getEffects()[currentEffect - 1].getName(), 10, tft.height() - 10);
     }
     else {
         tft.drawString(Settings::getEffects()[currentEffect].getName(), tft.width() / 2, 40);
@@ -38,7 +40,8 @@ void SingleEffectPage::draw() {
         for (int i = 0; i < 3; i++) { // Assuming each effect has 3 parameters
             if (i == currentParam && editMode == EditMode::PARAM) {
                 tft.setTextColor(TFT_GREEN, TFT_BLACK);
-            } else {
+            }
+            else {
                 tft.setTextColor(TFT_WHITE, TFT_BLACK);
             }
 
@@ -66,12 +69,12 @@ void SingleEffectPage::draw() {
 
         if (currentEffect > 0) {
             tft.setTextDatum(BL_DATUM);
-            tft.drawString(String("<-") + effectNames[currentEffect - 1], 10, tft.height() - 10);
+            tft.drawString(String("<-") + String(Settings::getEffects()[currentEffect - 1].getName()), 10, tft.height() - 10);
         }
 
         tft.setTextDatum(BR_DATUM);
-        if (currentEffect < sizeof(effectNames) / sizeof(effectNames[0]) - 1) {
-            tft.drawString(effectNames[currentEffect + 1] + String("->"), tft.width() - 10, tft.height() - 10);
+        if (currentEffect < 7) {
+            tft.drawString(String(Settings::getEffects()[currentEffect + 1].getName()) + String("->"), tft.width() - 10, tft.height() - 10);
         }
         else {
             tft.drawString("Back->", tft.width() - 10, tft.height() - 10);
@@ -85,6 +88,13 @@ void SingleEffectPage::handleEvent(const Event& event) {
         if (editMode == EditMode::EFFECT) {
             currentEffect = constrain(event.value, 0, 8); // Assuming 8 effects + "Back"
             Input::setRotaryValue(currentEffect);
+
+            // update controls
+            Controls::setEffect(currentEffect);
+            Effect effect = Settings::getEffects()[currentEffect];
+            Controls::setParam1(effect.params[0]);
+            Controls::setParam2(effect.params[1]);
+            Controls::setParam3(effect.params[2]);
         }
         else if (editMode == EditMode::PARAM) {
             currentParam = constrain(event.value, 0, 2); // each effect has 3 params
@@ -96,7 +106,17 @@ void SingleEffectPage::handleEvent(const Event& event) {
             effects[currentEffect].params[currentParam] = value;
             Settings::setEffects(effects);
 
-            Input::setRotaryValue(Settings::getEffects()[currentEffect].params[currentParam] / 15);
+            if (currentParam == 0) {
+                Controls::setParam1(value);
+            }
+            else if (currentParam == 1) {
+                Controls::setParam2(value);
+            }
+            else if (currentParam == 2) {
+                Controls::setParam3(value);
+            }
+            
+            Input::setRotaryValue(value / 15);
         }
         draw();
     }
