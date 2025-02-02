@@ -32,25 +32,33 @@ void Controls::init(unsigned char mix, unsigned char volume, unsigned char param
         pinMode(PARAM3_PIN, OUTPUT);
         setParam3(param3);
     }
+
+    if (DEMUX1_PIN != -1 && DEMUX2_PIN != -1 && DEMUX3_PIN != -1) {
+        pinMode(DEMUX1_PIN, OUTPUT);
+        pinMode(DEMUX2_PIN, OUTPUT);
+        pinMode(DEMUX3_PIN, OUTPUT);
+    }
 }
 
 void Controls::update() {
     // actually physically update the pots
     if (updateNeeded) { // optimization
-        // set the demux pins to select the effect (0-7)
-        digitalWrite(DEMUX1_PIN, (effectValue >> 2) & 1);
-        digitalWrite(DEMUX2_PIN, (effectValue >> 1) & 1);
-        digitalWrite(DEMUX3_PIN, effectValue & 1);
-
-        // pots
-        setPot(MIX_PIN, mixValue);
-        setPot(VOLUME_PIN, volumeValue);
-        setPot(PARAM1_PIN, param1Value);
-        setPot(PARAM2_PIN, param2Value);
-        setPot(PARAM3_PIN, param3Value);
-
         // reset the update flag
         updateNeeded = false;
+
+        // set the demux pins to select the effect (0-7)
+        if (DEMUX1_PIN != -1 && DEMUX2_PIN != -1 && DEMUX3_PIN != -1) {
+            digitalWrite(DEMUX1_PIN, (effectValue >> 2) & 1);
+            digitalWrite(DEMUX2_PIN, (effectValue >> 1) & 1);
+            digitalWrite(DEMUX3_PIN, effectValue & 1);
+        }
+
+        // pots
+        if (MIX_PIN != -1) setPot(MIX_PIN, mixValue);
+        if (VOLUME_PIN != -1) setPot(VOLUME_PIN, volumeValue);
+        if (PARAM1_PIN != -1) setPot(PARAM1_PIN, param1Value);
+        if (PARAM2_PIN != -1) setPot(PARAM2_PIN, param2Value);
+        if (PARAM3_PIN != -1) setPot(PARAM3_PIN, param3Value);
     }
 }
 

@@ -19,6 +19,7 @@ uint32_t settingsSaveNextMillis = 0;
 int settingsSaveInterval = 10000; // 10 seconds
 
 // TODO: maybe make it so if nothing changes on the screen after an input, don't update it (to prevent flickering)
+// TODO: effects that have less than 3 params should not show empty params
 
 void setup() {
     Serial.begin(115200);
