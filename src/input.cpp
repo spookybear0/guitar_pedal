@@ -3,12 +3,6 @@
 #include <Arduino.h>
 #include "events/event_manager.h"
 
-#define ROTARY_PIN_A 21
-#define ROTARY_PIN_B 22
-#define ROTARY_BUTTON 25
-#define FOOTSWITCH1_PIN -1
-#define FOOTSWITCH2_PIN -1
-
 ESP32Encoder Input::rotaryEncoder;
 int Input::rotaryValue = 0; // clamped 0-255
 int Input::lastRotaryValue = -1;
@@ -22,8 +16,9 @@ int Input::lastFootswitch2Millis = 0;
 
 void Input::init() {
     // initalize rotary encoder
-    pinMode(ROTARY_BUTTON, INPUT_PULLUP);
+    pinMode(ROTARY_CLICK, INPUT_PULLUP);
     ESP32Encoder::useInternalWeakPullResistors=puType::up;
+    // TODO: try other reading methods
     rotaryEncoder.attachSingleEdge(ROTARY_PIN_A, ROTARY_PIN_B);
     rotaryEncoder.setCount(0);
 
@@ -53,7 +48,7 @@ void Input::handleInput() {
     lastRotaryValue = rotaryValue;
 
     // rotary encoder (click), with debounce, and only considers press, not release
-    int buttonState = digitalRead(ROTARY_BUTTON);
+    int buttonState = digitalRead(ROTARY_CLICK);
     if (buttonState == LOW && lastRotaryButtonState == HIGH && millis() - lastRotaryButtonMillis > 50) {
         Serial.println("Rotary Button Pressed");
         EventManager::handleEvent(Event{EventType::EVENT_ROTARY_CLICK, 1});

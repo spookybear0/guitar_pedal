@@ -11,10 +11,6 @@
 #include "ui/pages/ordered_effects.h"
 #include "ui/pages/settings.h"
 
-#define ROTARY_PIN_A 21
-#define ROTARY_PIN_B 22
-#define ROTARY_BUTTON 25
-
 TFT_eSPI tft = TFT_eSPI();
 
 Page* UIManager::pages[] = {

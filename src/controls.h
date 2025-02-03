@@ -4,18 +4,6 @@
 // control 5 different analog potentiometers, param1, param2, param3, volume and mix
 
 
-// chip select (CS) pin for the digital potentiometers
-#define MIX_PIN -1 // 10K potentiometer
-#define VOLUME_PIN -1 // 100K potentiometer
-#define PARAM1_PIN -1 // 100K potentiometer
-#define PARAM2_PIN -1 // 100K potentiometer
-#define PARAM3_PIN -1 // 100K potentiometer
-
-// effect selector demux pins 3 to 8
-#define DEMUX1_PIN -1
-#define DEMUX2_PIN -1
-#define DEMUX3_PIN -1
-
 // 0-255
 class Controls {
 public:
