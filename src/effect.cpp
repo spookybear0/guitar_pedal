@@ -37,6 +37,18 @@ Effect::Effect(int id) {
     params[2] = effectParamValues[id][2];
 }
 
+Effect::Effect(const char* name) {
+    for (int i = 0; i < 8; i++) {
+        if (strcmp(name, effectNames[i]) == 0) {
+            id = i;
+            params[0] = effectParamValues[i][0];
+            params[1] = effectParamValues[i][1];
+            params[2] = effectParamValues[i][2];
+            break;
+        }
+    }
+}
+
 Effect Effect::fromJson(const JsonObject& json) {
     Effect effect;
 
@@ -44,6 +56,9 @@ Effect Effect::fromJson(const JsonObject& json) {
     effect.params[0] = json["params"][0];
     effect.params[1] = json["params"][1];
     effect.params[2] = json["params"][2];
+    effect.volume = json["volume"];
+    effect.mix = json["mix"];
+
     return effect;
 }
 
@@ -55,17 +70,17 @@ const char* Effect::getParamName(int index) {
     return effectParamNames[id][index];
 }
 
-JsonDocument& Effect::toJson(bool full) {
-    static DynamicJsonDocument doc(1024);
+void Effect::toJson(JsonDocument& doc, bool full) {
     doc["id"] = id;
     doc["params"][0] = params[0];
     doc["params"][1] = params[1];
     doc["params"][2] = params[2];
+    doc["volume"] = volume;
+    doc["mix"] = mix;
     if (full) {
         doc["name"] = getName();
         doc["paramNames"][0] = getParamName(0);
         doc["paramNames"][1] = getParamName(1);
         doc["paramNames"][2] = getParamName(2);
     }
-    return doc;
 }

@@ -145,8 +145,22 @@ void SingleEffectPage::handleEvent(const Event& event) {
 }
 
 void SingleEffectPage::enter() {
-    currentEffect = 0;
+    if (initalEffect == -1) {
+        currentEffect = 0;
+
+    }
+    else {
+        currentEffect = initalEffect;
+    }
     currentParam = -1;
     editMode = EditMode::EFFECT;
     Input::setRotaryValue(currentEffect);
+}
+
+void SingleEffectPage::setInitialEffect(int effect) {
+    initalEffect = effect;
+}
+
+int SingleEffectPage::getEffect() {
+    return currentEffect;
 }

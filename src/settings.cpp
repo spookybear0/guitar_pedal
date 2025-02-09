@@ -3,12 +3,13 @@
 #include <ArduinoJson.h>
 #include <vector>
 #include "effect.h"
+#include "preset.h"
 
 
 Preferences Settings::settings;
 bool Settings::updateNeeded = false;
-int Settings::volume = 50;
-int Settings::mix = 100;
+int Settings::volume = 128;
+int Settings::mix = 255;
 std::vector<Effect> Settings::effects = {
     Effect(0),
     Effect(1),
@@ -19,7 +20,8 @@ std::vector<Effect> Settings::effects = {
     Effect(6),
     Effect(7)
 };
-std::vector<std::vector<Effect>> Settings::effectPresets = {};
+std::vector<Preset>& Settings::effectPresets = *new std::vector<Preset>();
+int Settings::nextPresetId = 0;
 
 void Settings::begin() {
     settings.begin("settings", false);
@@ -37,6 +39,7 @@ void Settings::begin() {
         mix = getSavedMix();
         effects = getSavedEffects();
         effectPresets = getSavedEffectPresets();
+        nextPresetId = getNextPresetId();
     }
 }
 
@@ -45,8 +48,8 @@ void Settings::reset() {
 
     setBool("firstRun", false);
     
-    setInt("volume", 50);
-    setInt("mix", 100);
+    setInt("volume", 128);
+    setInt("mix", 255);
 
     // set default effects to default values
     JsonDocument effectsDoc;
@@ -54,7 +57,9 @@ void Settings::reset() {
 
     for (int i = 0; i < 8; i++) {
         Effect effect(i);
-        effectsArray.add(effect.toJson());
+        JsonDocument effectDoc;
+        effect.toJson(effectDoc, false);
+        effectsArray.add(effectDoc);
     }
 
     setJson("effects", effectsDoc);
@@ -62,12 +67,15 @@ void Settings::reset() {
 
     setString("presets", "{\"presets\": []}");
 
+    setInt("nextPresetId", 0);
+
 
     // save values in variables
     volume = getSavedVolume();
     mix = getSavedMix();
     effects = getSavedEffects();
     effectPresets = getSavedEffectPresets();
+    nextPresetId = getNextPresetId();
 }
 
 void Settings::saveValues() {
@@ -82,7 +90,9 @@ void Settings::saveValues() {
         JsonArray effectsArray = effectDoc["effects"].to<JsonArray>();
 
         for (int i = 0; i < 8; i++) {
-            effectsArray.add(effects[i].toJson());
+            JsonDocument effectDoc;
+            effects[i].toJson(effectDoc, false);
+            effectsArray.add(effectDoc);
         }
 
         setJson("effects", effectDoc);
@@ -93,14 +103,15 @@ void Settings::saveValues() {
         // save as {"presets": [[Effect, Effect, ...], [Effect, Effect, ...], ...]}
 
         JsonArray presetsArray = presetDoc["presets"].to<JsonArray>();
-        for (auto& preset : effectPresets) {
-            JsonArray presetArray = presetsArray.createNestedArray();
-            for (auto& effect : preset) {
-                presetArray.add(effect.toJson());
-            }
+        for (int i = 0; i < effectPresets.size(); i++) {
+            JsonDocument presetDoc;
+            effectPresets[i].toJson(presetDoc);
+            presetsArray.add(presetDoc);
         }
 
         setJson("presets", presetDoc);
+
+        settings.putInt("nextPresetId", nextPresetId);
 
         updateNeeded = false;
 
@@ -135,15 +146,39 @@ void Settings::setEffects(std::vector<Effect> effects) {
     updateNeeded = true;
 }
 
-std::vector<std::vector<Effect>> Settings::getEffectPresets() {
+std::vector<Preset>& Settings::getEffectPresets() {
     return effectPresets;
 }
 
-void Settings::setEffectPresets(std::vector<std::vector<Effect>>& presets) {
+void Settings::setEffectPresets(std::vector<Preset>& presets) {
     Settings::effectPresets = presets;
     updateNeeded = true;
 }
 
+void Settings::addEffectPreset(Preset preset) {
+    effectPresets.push_back(preset);
+    updateNeeded = true;
+}
+
+void Settings::removeEffectPreset(int id) {
+    Serial.println("Removing preset " + String(id));
+    for (int i = 0; i < effectPresets.size(); i++) {
+        if (effectPresets[i].getId() == id) {
+            Serial.println("actually Removing preset " + String(id));
+            effectPresets.erase(effectPresets.begin() + i);
+            break;
+        }
+    }
+    updateNeeded = true;
+}
+
+int Settings::getNextPresetId() {
+    return nextPresetId;
+}
+
+void Settings::setNextPresetId(int id) {
+    setInt("nextPresetId", id);
+}
 
 
 // getters and setters internal use
@@ -176,8 +211,8 @@ std::vector<Effect> Settings::getSavedEffects() {
     return effectsOutput;
 }
 
-std::vector<std::vector<Effect>> Settings::getSavedEffectPresets() {
-    std::vector<std::vector<Effect>> presets;
+std::vector<Preset>& Settings::getSavedEffectPresets() {
+    std::vector<Preset>& presets = *new std::vector<Preset>();
 
     JsonDocument doc;
     getJson("presets", doc);
@@ -186,24 +221,16 @@ std::vector<std::vector<Effect>> Settings::getSavedEffectPresets() {
 
     // loop through each preset
     for (JsonArray::iterator presetIter = presetsArray.begin(); presetIter != presetsArray.end(); ++presetIter) {
-        JsonArray presetArray = *presetIter; // get the preset array
-
-        std::vector<Effect> preset; // store effects in preset
-        for (JsonArray::iterator effectIter = presetArray.begin(); effectIter != presetArray.end(); ++effectIter) {
-            Effect effect = Effect::fromJson(*effectIter);
-            preset.push_back(effect);
-        }
-
-        presets.push_back(preset); // add preset to presets
+        Preset preset = Preset::fromJson(*presetIter);
+        presets.push_back(preset);
     }
 
     return presets;
 }
 
-
-
-
-
+int Settings::getSavedNextPresetId() {
+    return getInt("nextPresetId");
+}
 
 void Settings::setString(const char* key, const char* value) {
     settings.putString(key, value);

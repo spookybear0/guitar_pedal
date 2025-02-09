@@ -11,12 +11,12 @@ void effects_get(JsonDocument& json, JsonDocument& response) {
     JsonArray effectsArray = effectDoc["effects"].to<JsonArray>();
 
     for (int i = 0; i < 8; i++) {
-        effectsArray.add(effects[i].toJson(true));
+        JsonDocument effect;
+        effects[i].toJson(effect, true);
+        effectsArray.add(effect);
     }
 
     // create response
     response["status"] = "success";
     response["data"] = effectDoc;
-
-    Serial.println(response.as<String>());
 }

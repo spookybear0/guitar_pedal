@@ -4,6 +4,7 @@
 #include <ArduinoJson.h>
 #include "effect.h"
 #include <vector>
+#include "preset.h"
 
 class Settings {
     public:
@@ -20,8 +21,14 @@ class Settings {
         static std::vector<Effect> getEffects(); // size 8 ONLY
         static void setEffects(std::vector<Effect> effects); // size 8 ONLY
 
-        static std::vector<std::vector<Effect>> getEffectPresets();
-        static void setEffectPresets(std::vector<std::vector<Effect>>& presets);
+        static std::vector<Preset>& getEffectPresets();
+        static void setEffectPresets(std::vector<Preset>& presets);
+
+        static void addEffectPreset(Preset preset);
+        static void removeEffectPreset(int id);
+
+        static int getNextPresetId();
+        static void setNextPresetId(int id);
     private:
         // values to save so we don't save to flash constantly
         static bool updateNeeded;// = false;
@@ -29,14 +36,17 @@ class Settings {
         static int volume;
         static int mix;
         static std::vector<Effect> effects;
-        static std::vector<std::vector<Effect>> effectPresets;
+        static std::vector<Preset>& effectPresets;
+        static int nextPresetId;
 
         // getters and setters internal use
 
         static int getSavedVolume();
         static int getSavedMix();
         static std::vector<Effect> getSavedEffects();
-        static std::vector<std::vector<Effect>> getSavedEffectPresets();
+        static std::vector<Preset>& getSavedEffectPresets();
+        static int getSavedNextPresetId();
+
 
         static void setString(const char* key, const char* value);
         static void setInt(const char* key, int value);

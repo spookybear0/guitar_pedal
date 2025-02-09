@@ -6,14 +6,12 @@
 #include <Preferences.h>
 #include <ArduinoJson.h>
 #include <ESP32Encoder.h>
-#include "bluetooth.h"
+#include "server.h"
 #include "settings.h"
 #include "ui/ui_manager.h"
 #include "controls.h"
 #include "events/event_manager.h"
 #include "input.h"
-
-Bluetooth bluetooth; // TODO: static class
 
 uint32_t settingsSaveNextMillis = 0;
 int settingsSaveInterval = 10000; // 10 seconds
@@ -32,15 +30,23 @@ void setup() {
 
     UIManager::init();
 
-    bluetooth.start();
-
     Settings::begin();
+
+    PedalServer::start();
 }
 
 void loop() {
+    // handle server requests
+
+    PedalServer::handleClient();
+
     // read inputs and handle events
 
     Input::handleInput();
+
+    // ui update
+
+    UIManager::update();
 
     // send values to virtual potentiometers and demux
 

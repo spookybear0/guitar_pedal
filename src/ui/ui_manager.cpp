@@ -21,6 +21,8 @@ Page* UIManager::pages[] = {
 };
 PageType UIManager::currentPage = PageType::MAIN_MENU; // corresponds to the index of the page in the pages array
 
+bool UIManager::pageChangeNeeded = false;
+
 void UIManager::init() {
     // tft
     tft.init();
@@ -56,8 +58,33 @@ void UIManager::changePage(PageType page) {
         return;
     }
 
+    pageChangeNeeded = false;
+
     currentPage = page;
     Input::setRotaryValue(0);
     pages[currentPage]->enter();
+    pages[currentPage]->draw();
+}
+
+void UIManager::changePageDeferred(PageType page) {
+    // check page number validity
+    if (page < 0 || page >= sizeof(pages) / sizeof(pages[0])) {
+        Serial.println("ERROR: Invalid page number, restarting...");
+        ESP.restart();
+        return;
+    }
+
+    currentPage = page;
+    pageChangeNeeded = true;
+}
+
+void UIManager::update() {
+    // check if we need to change pages
+    if (pageChangeNeeded) {
+        changePage(currentPage);
+    }
+}
+
+void UIManager::forceDraw() {
     pages[currentPage]->draw();
 }

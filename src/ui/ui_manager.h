@@ -17,10 +17,14 @@ enum PageType {
 class UIManager {
 private:
     static PageType currentPage;
+    static bool pageChangeNeeded;
 public:
     static Page* pages[];
 
     static void init();
     static void handleEvent(const Event& event);
     static void changePage(PageType page);
+    static void changePageDeferred(PageType page);
+    static void update();
+    static void forceDraw();
 };
