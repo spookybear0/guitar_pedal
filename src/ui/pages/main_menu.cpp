@@ -43,8 +43,8 @@ void MainMenuPage::handleEvent(const Event& event) {
         if (currentMenuItem == 0) { // Single Effect
             UIManager::changePage(PageType::SINGLE_EFFECT);
         }
-        else if (currentMenuItem == 1) { // Ordered Effects
-            UIManager::changePage(PageType::ORDERED_EFFECTS);
+        else if (currentMenuItem == 1) { // Preset List
+            UIManager::changePage(PageType::PRESET_LIST);
         }
         else if (currentMenuItem == 2) { // Settings
             UIManager::changePage(PageType::SETTINGS);

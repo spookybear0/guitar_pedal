@@ -4,7 +4,7 @@
 
 class MainMenuPage : public Page {
 private:
-    const char* menuItems[3] = {"Single Effect", "Ordered Effects", "Settings"};
+    const char* menuItems[3] = {"Single Effect", "Presets", "Settings"};
     int currentMenuItem = 0;
 public:
     void draw() override;

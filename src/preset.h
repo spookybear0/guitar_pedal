@@ -7,6 +7,7 @@
 
 class Preset {
 public:
+    Preset();
     Preset(std::vector<Effect> effects);
     Preset(std::string name, std::vector<Effect> effects);
 
@@ -24,6 +25,4 @@ public:
 private:
     int id;
     std::string name;
-
-    Preset();
 };
