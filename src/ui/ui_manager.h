@@ -10,8 +10,10 @@ extern TFT_eSPI tft;
 enum PageType {
     MAIN_MENU,
     SINGLE_EFFECT,
-    PRESET_LIST,
+    PRESETS,
     PRESET,
+    EDIT_PRESETS,
+    EDIT_PRESET,
     SETTINGS
 };
 

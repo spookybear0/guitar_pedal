@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ui/page.h"
+#include "../../../preset.h"
 
-class PresetListPage : public Page {
+class EditPresetsPage : public Page {
 private:
     int currentMenuItem = 0;
 public:

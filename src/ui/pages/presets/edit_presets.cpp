@@ -1,4 +1,4 @@
-#include <ui/pages/presets/preset_list.h>
+#include <ui/pages/presets/edit_presets.h>
 #include "ui/page.h"
 #define DISABLE_ALL_LIBRARY_WARNINGS
 #include "TFT_eSPI.h"
@@ -6,9 +6,9 @@
 #include "events/event_manager.h"
 #include "input.h"
 #include "../../../settings.h"
-#include "ui/pages/presets/preset.h"
+#include "ui/pages/presets/edit_preset.h"
 
-void PresetListPage::draw() {
+void EditPresetsPage::draw() {
     // centered text
 
     tft.fillScreen(TFT_BLACK);
@@ -17,7 +17,7 @@ void PresetListPage::draw() {
     tft.setTextColor(TFT_WHITE);
     tft.setTextDatum(MC_DATUM);
     tft.setTextSize(2);
-    tft.drawString("Presets", tft.width() / 2, 40);
+    tft.drawString("Edit Presets", tft.width() / 2, 40);
 
     tft.setTextSize(1);
 
@@ -52,7 +52,7 @@ void PresetListPage::draw() {
     tft.setTextColor(TFT_WHITE);
 }
 
-void PresetListPage::handleEvent(const Event& event) {
+void EditPresetsPage::handleEvent(const Event& event) {
     if (event.type == EventType::EVENT_ROTARY_TURN) {
         currentMenuItem = constrain(event.value, 0, Settings::getEffectPresets().size());
         Input::setRotaryValue(currentMenuItem);
@@ -64,14 +64,14 @@ void PresetListPage::handleEvent(const Event& event) {
         }
         else {
             // navigate to preset page
-            UIManager::changePageDeferred(PageType::PRESET);
+            UIManager::changePageDeferred(PageType::EDIT_PRESET);
             // pass preset id
-            PresetPage* page = (PresetPage*)UIManager::pages[PageType::PRESET];
+            EditPresetPage* page = (EditPresetPage*)UIManager::pages[PageType::EDIT_PRESET];
             page->setPreset(Settings::getEffectPresets()[currentMenuItem]);
         }
     }
 }
 
-void PresetListPage::enter() {
+void EditPresetsPage::enter() {
 
 }

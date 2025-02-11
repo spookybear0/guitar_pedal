@@ -24,7 +24,7 @@ void MainMenuPage::draw() {
         } else {
             tft.setTextColor(TFT_WHITE, TFT_BLACK);
         }
-        tft.drawString(menuItems[i], tft.width() / 2, tft.height() / 2 + i * 30);
+        tft.drawString(menuItems[i], tft.width() / 2, tft.height() * 0.4 + i * 30);
     }
 
     tft.setTextColor(TFT_WHITE);
@@ -44,9 +44,12 @@ void MainMenuPage::handleEvent(const Event& event) {
             UIManager::changePage(PageType::SINGLE_EFFECT);
         }
         else if (currentMenuItem == 1) { // Preset List
-            UIManager::changePage(PageType::PRESET_LIST);
+            UIManager::changePage(PageType::PRESETS);
         }
-        else if (currentMenuItem == 2) { // Settings
+        else if (currentMenuItem == 2) { // Edit Presets
+            UIManager::changePage(PageType::EDIT_PRESETS);
+        }
+        else if (currentMenuItem == 3) { // Settings
             UIManager::changePage(PageType::SETTINGS);
         }
     }

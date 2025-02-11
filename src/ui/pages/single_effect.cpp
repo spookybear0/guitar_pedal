@@ -38,7 +38,7 @@ void SingleEffectPage::draw() {
         int paramSpacing = 40;
 
         for (int i = 0; i < 3; i++) { // Assuming each effect has 3 parameters
-            if (i == currentParam && editMode == EditMode::PARAM) {
+            if (i == currentParam && editMode == EffectEditMode::PARAM) {
                 tft.setTextColor(TFT_GREEN, TFT_BLACK);
             }
             else {
@@ -55,7 +55,7 @@ void SingleEffectPage::draw() {
             tft.fillRect(barX, startY + i * paramSpacing + 10, barWidth, 12, TFT_DARKGREY);
 
             int progressBarColor = TFT_WHITE;
-            if (i == currentParam && editMode == EditMode::VALUE) {
+            if (i == currentParam && editMode == EffectEditMode::VALUE) {
                 progressBarColor = TFT_GREEN;
             }
             
@@ -85,7 +85,7 @@ void SingleEffectPage::draw() {
 
 void SingleEffectPage::handleEvent(const Event& event) {
     if (event.type == EventType::EVENT_ROTARY_TURN) {
-        if (editMode == EditMode::EFFECT) {
+        if (editMode == EffectEditMode::EFFECT) {
             currentEffect = constrain(event.value, 0, 8); // Assuming 8 effects + "Back"
             Input::setRotaryValue(currentEffect);
 
@@ -96,11 +96,11 @@ void SingleEffectPage::handleEvent(const Event& event) {
             Controls::setParam2(effect.params[1]);
             Controls::setParam3(effect.params[2]);
         }
-        else if (editMode == EditMode::PARAM) {
+        else if (editMode == EffectEditMode::PARAM) {
             currentParam = constrain(event.value, 0, 2); // each effect has 3 params
             Input::setRotaryValue(currentParam);
         }
-        else if (editMode == EditMode::VALUE) {
+        else if (editMode == EffectEditMode::VALUE) {
             std::vector<Effect> effects = Settings::getEffects();
             int value = constrain(event.value*15, 0, 255);
             effects[currentEffect].params[currentParam] = value;
@@ -121,22 +121,22 @@ void SingleEffectPage::handleEvent(const Event& event) {
         draw();
     }
     if (event.type == EventType::EVENT_ROTARY_CLICK && event.value == 1) { // rotary click (press only)
-        if (editMode == EditMode::EFFECT) {
+        if (editMode == EffectEditMode::EFFECT) {
             if (currentEffect == 8) { // back
                 UIManager::changePage(PageType::MAIN_MENU);
             }
             else {
-                editMode = EditMode::PARAM;
+                editMode = EffectEditMode::PARAM;
                 currentParam = 0;
                 Input::setRotaryValue(currentParam);
             }
         }
-        else if (editMode == EditMode::PARAM) {
-            editMode = EditMode::VALUE;
+        else if (editMode == EffectEditMode::PARAM) {
+            editMode = EffectEditMode::VALUE;
             Input::setRotaryValue(Settings::getEffects()[currentEffect].params[currentParam] / 15);
         }
-        else if (editMode == EditMode::VALUE) {
-            editMode = EditMode::EFFECT;
+        else if (editMode == EffectEditMode::VALUE) {
+            editMode = EffectEditMode::EFFECT;
             currentParam = -1; // deselect param
             Input::setRotaryValue(currentEffect);
         }
@@ -153,7 +153,7 @@ void SingleEffectPage::enter() {
         currentEffect = initalEffect;
     }
     currentParam = -1;
-    editMode = EditMode::EFFECT;
+    editMode = EffectEditMode::EFFECT;
     Input::setRotaryValue(currentEffect);
 }
 

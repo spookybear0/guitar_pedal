@@ -8,8 +8,10 @@
 
 #include "ui/pages/main_menu.h"
 #include "ui/pages/single_effect.h"
-#include "ui/pages/presets/preset_list.h"
+#include "ui/pages/presets/presets.h"
 #include "ui/pages/presets/preset.h"
+#include "ui/pages/presets/edit_preset.h"
+#include "ui/pages/presets/edit_presets.h"
 #include "ui/pages/settings.h"
 
 TFT_eSPI tft = TFT_eSPI();
@@ -17,8 +19,10 @@ TFT_eSPI tft = TFT_eSPI();
 Page* UIManager::pages[] = {
     new MainMenuPage(),
     new SingleEffectPage(),
-    new PresetListPage(),
+    new PresetsPage(),
     new PresetPage(),
+    new EditPresetsPage(),
+    new EditPresetPage(),
     new SettingsPage()
 };
 PageType UIManager::currentPage = PageType::MAIN_MENU; // corresponds to the index of the page in the pages array
